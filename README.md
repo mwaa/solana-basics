@@ -1,0 +1,1 @@
+This repository contains multiple Solana-based projects built using Anchor Framework and Pinnochio, designed to provide hands-on experience with program development on Solana. Each project focuses on a different use case, from decentralized finance (DeFi) to NFTs and marketplaces.
