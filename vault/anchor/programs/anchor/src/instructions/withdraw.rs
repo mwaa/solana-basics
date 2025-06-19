@@ -35,15 +35,16 @@ pub struct Withdraw<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-pub fn handler(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
+pub fn handle_withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
     
     require!(amount > 0, ErrorCode::InvalidArgument);
     require!(amount <= ctx.accounts.vault_account.amount, ErrorCode::InsufficientBalance);
 
-    let vault_state_key = ctx.accounts.vault_state.key();
-    let vault_account_bump = ctx.accounts.vault_state.load()?.bump_token_account;
+    let user_key = ctx.accounts.user.key();
+    let mint_key = ctx.accounts.mint.key();
+    let vault_state_bump = ctx.accounts.vault_state.load()?.bump;
 
-    let seeds = &[VAULT_ACCOUNT_SEED, vault_state_key.as_ref(), &[vault_account_bump]];
+    let seeds = &[VAULT_SEED, user_key.as_ref(), mint_key.as_ref(), &[vault_state_bump]];
     let signer = &[&seeds[..]];
     let cpi_accounts = TransferChecked {
         from: ctx.accounts.vault_account.to_account_info(),

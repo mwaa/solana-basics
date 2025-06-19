@@ -36,7 +36,7 @@ pub struct Initialize<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(ctx: Context<Initialize>) -> Result<()> {
+pub fn handle_initialize(ctx: Context<Initialize>) -> Result<()> {
     let vault_state = &mut ctx.accounts.vault_state.load_init()?;
     let mint = &ctx.accounts.mint;
 

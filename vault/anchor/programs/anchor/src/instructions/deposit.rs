@@ -35,7 +35,7 @@ pub struct Deposit<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-pub fn handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
+pub fn handle_deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     
     require!(amount > 0, ErrorCode::InvalidArgument);
     require!(ctx.accounts.user_account.amount >= amount, ErrorCode::InsufficientBalance);

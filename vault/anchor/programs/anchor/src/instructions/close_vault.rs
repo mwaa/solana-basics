@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{transfer_checked, Mint, Token, TokenAccount, TransferChecked};
+use anchor_spl::token::{close_account, transfer_checked, CloseAccount, Mint, Token, TokenAccount, TransferChecked};
 use crate::events::CloseEvent;
 use crate::state::VaultState;
 use crate::{VAULT_ACCOUNT_SEED, VAULT_SEED};
@@ -28,7 +28,6 @@ pub struct CloseVault<'info> {
         mut,
         seeds = [VAULT_ACCOUNT_SEED, vault_state.key().as_ref()],
         bump = vault_state.load()?.bump_token_account,
-        close = user,
     )]
     pub vault_account: Account<'info, TokenAccount>,
 
@@ -38,13 +37,14 @@ pub struct CloseVault<'info> {
 }
 
 // Anchor does not require explicit instruction for close,
-pub fn handler(ctx: Context<CloseVault>) -> Result<()> {
+pub fn handle_close_vault(ctx: Context<CloseVault>) -> Result<()> {
     
-    let vault_state_key = ctx.accounts.vault_state.key();
-    let vault_account_bump = ctx.accounts.vault_state.load()?.bump_token_account;
+    let user_key = ctx.accounts.user.key();
+    let mint_key = ctx.accounts.mint.key();
+    let vault_state_bump = ctx.accounts.vault_state.load()?.bump;
     let amount = ctx.accounts.vault_account.amount;
 
-    let seeds = &[VAULT_ACCOUNT_SEED, vault_state_key.as_ref(), &[vault_account_bump]];
+    let seeds = &[VAULT_SEED, user_key.as_ref(), mint_key.as_ref(), &[vault_state_bump]];
     let signer = &[&seeds[..]];
     let cpi_accounts = TransferChecked {
         from: ctx.accounts.vault_account.to_account_info(),
@@ -54,6 +54,16 @@ pub fn handler(ctx: Context<CloseVault>) -> Result<()> {
     };
     let cpi_ctx = CpiContext::new_with_signer(ctx.accounts.token_program.to_account_info(), cpi_accounts, signer);
     transfer_checked(cpi_ctx, amount, ctx.accounts.mint.decimals)?;
+
+
+    // Close the token account using the Token Program
+    let close_accounts = CloseAccount {
+        account: ctx.accounts.vault_account.to_account_info(),
+        destination: ctx.accounts.user.to_account_info(),
+        authority: ctx.accounts.vault_state.to_account_info(),
+    };
+    let close_ctx = CpiContext::new_with_signer(ctx.accounts.token_program.to_account_info(), close_accounts, signer);
+    close_account(close_ctx)?;
 
     emit!(CloseEvent {
         owner: ctx.accounts.user.key(),
