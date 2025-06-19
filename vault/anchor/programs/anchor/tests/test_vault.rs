@@ -85,7 +85,7 @@ fn test_initialize_vault() {
 
     let (mollusk, program_id, user, token_mint, token_mint_account, _) = init_mollusk();
 
-        //Derive vault state PDA
+    //Derive vault state PDA
     let (vault_state_pda, _) =
         Pubkey::find_program_address(&["vault".as_ref(), user.as_ref(), token_mint.as_ref()], &program_id);
 

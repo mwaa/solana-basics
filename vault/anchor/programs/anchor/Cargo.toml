@@ -8,6 +8,10 @@ edition = "2021"
 crate-type = ["cdylib", "lib"]
 name = "anchor"
 
+[[bench]]
+name = "bench"
+harness = false
+
 [features]
 default = []
 cpi = ["no-entrypoint"]
@@ -15,7 +19,6 @@ no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
 idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
-
 
 [dependencies]
 anchor-lang = "0.31.1"
@@ -25,7 +28,9 @@ bytemuck = { version = "1.23.1", features = ["derive", "min_const_generics"] }
 [dev-dependencies]
 five8_const = "=0.1.4"
 mollusk-svm = "=0.2.1"
+mollusk-svm-bencher = "0.2.1"
 mollusk-svm-programs-token = "=0.2.1"
 solana-sdk = "=2.2.1"
 spl-token = "8.0.0"
+
 

@@ -6,6 +6,7 @@ use crate::{VAULT_ACCOUNT_SEED, VAULT_SEED};
 
 #[derive(Accounts)]
 pub struct CloseVault<'info> {
+    #[account(mut)]
     pub user: Signer<'info>,
 
     #[account(
