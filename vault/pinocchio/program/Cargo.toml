@@ -1,0 +1,34 @@
+[package]
+name = "solana-pinocchio-starter"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pinocchio = "0.8.4"
+pinocchio-log = "0.4.0"
+pinocchio-pubkey = "0.2.4"
+pinocchio-system = "0.2.3"
+shank = "0.4.2"
+
+[dev-dependencies]
+solana-sdk = "2.2.1"
+mollusk-svm = "0.2.0"
+mollusk-svm-bencher = "0.2.0"
+
+
+[features]
+no-entrypoint = []
+std = []
+test-default = ["no-entrypoint", "std"]
+bench-default = ["no-entrypoint", "std"]
+
+[[bench]]
+name = "compute_units"
+harness = false
+
+
+[[test]]
+name = "unit_tests"
